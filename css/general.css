@@ -1,0 +1,38 @@
+.hidden {
+    opacity: 0;
+    transform: translateY(5%);
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+
+    font-size: 4dvh;
+
+    pointer-events: none;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #111;
+}
+
+button {
+    font-size: 4dvh;
+
+    border: none;
+    background: none;
+
+    color: whitesmoke;
+
+    font-family: mincho;
+}

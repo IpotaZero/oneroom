@@ -1,0 +1,14 @@
+#serif-box {
+    bottom: 1em;
+    width: calc(100% - 2em);
+    height: 6em;
+    font-size: 4dvh;
+    color: whitesmoke;
+    border: whitesmoke 1px solid;
+    background-color: #111c;
+    position: absolute;
+
+    transition: opacity 0.4s, transform 0.4s;
+
+    padding: 0.5em;
+}

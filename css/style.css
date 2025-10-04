@@ -1,0 +1,21 @@
+#container {
+    height: 80%;
+    aspect-ratio: 4/3;
+
+    border: black 1px solid;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: mincho;
+}
+
+canvas {
+    height: 100%;
+    background-color: white;
+
+    image-rendering: pixelated;
+}
