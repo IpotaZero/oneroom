@@ -60,6 +60,12 @@
             background-color: #111c;
 
             display: flex;
+
+            .status-icon {
+                height: fit-content;
+                aspect-ratio: 1;
+                margin-right: 1em;
+            }
         }
     }
 }

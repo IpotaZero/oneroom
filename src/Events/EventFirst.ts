@@ -1,13 +1,14 @@
 import { MapData } from "../Game/MapData"
+import { Scene } from "../Game/Scene"
 import { Player } from "../Sprites/Player"
 import { vec } from "../utils/Vec"
 import { GameEvent } from "./GameEvent"
 
 export class EventFirst extends GameEvent {
-    *G(map: MapData) {
+    *G(scene: Scene) {
         yield* this.say(["ん......ここぁ"])
 
-        const player = map.realSprites.find((s) => s instanceof Player)!
+        const player = scene.map.player
 
         player.direction = 1
         yield* Array(15)

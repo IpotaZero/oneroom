@@ -11,4 +11,18 @@
     transition: opacity 0.4s, transform 0.4s;
 
     padding: 0.5em;
+
+    display: flex;
+    gap: 1em;
+
+    #text-box {
+        height: 100%;
+        display: inline;
+    }
+
+    #serif-icon {
+        height: 100%;
+        aspect-ratio: 1;
+        object-fit: contain;
+    }
 }

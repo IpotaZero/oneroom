@@ -1,8 +1,10 @@
 import tileURL from "../../assets/tiles.json"
+import { MapWriter } from "../Sprites/MapWriter"
 import { Player } from "../Sprites/Player"
 import { Sprites } from "../Sprites/Speites"
 import { Sprite } from "../Sprites/Sprite"
 import { TILE_SIZE } from "./Constant"
+import { Scene } from "./Scene"
 
 const tileMaps = new Map<string, HTMLImageElement>()
 
@@ -17,11 +19,11 @@ export class MapData {
     realSprites: Sprite[] = []
     canvas!: HTMLCanvasElement
 
-    player: Player
+    readonly player: Player | MapWriter
 
-    ready: Promise<void>
+    readonly ready: Promise<void>
 
-    constructor(mapdata: MapDataJSON) {
+    constructor(mapdata: MapDataJSON, player: Player | MapWriter, scene: Scene) {
         this.WIDTH = mapdata.walls[0].length
         this.HEIGHT = mapdata.walls.length
 
@@ -29,13 +31,13 @@ export class MapData {
         this.tiles = mapdata.tiles
         this.walls = mapdata.walls
 
-        this.player = new Player(this)
+        this.player = player
 
-        this.ready = this.setup()
+        this.ready = this.setup(scene)
     }
 
-    async setup() {
-        this.realSprites = this.sprites.map((data) => new Sprites[data.class](this, data.options))
+    async setup(scene: Scene) {
+        this.realSprites = this.sprites.map((data) => new Sprites[data.class](scene, data.options))
         this.realSprites.push(this.player)
         this.canvas = await this.#createCanvas()
     }

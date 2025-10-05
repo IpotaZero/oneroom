@@ -2,6 +2,7 @@ import { vec, Vec } from "../utils/Vec"
 import { TILE_SIZE } from "../Game/Constant"
 import { MapData } from "../Game/MapData"
 import { GameEvent } from "../Events/GameEvent"
+import { Scene } from "../Game/Scene"
 
 type ImageOption = { url: string; p: [number, number]; size: [number, number] }
 
@@ -21,12 +22,17 @@ export class Sprite {
 
     gs: Generator[] = []
 
-    constructor(map: MapData, { p, image, size }: SpriteOption) {
+    constructor(scene: Scene, { p, image, size }: SpriteOption) {
         this.p = vec(p[0], p[1])
         this.#updateQ()
         this.size = vec(size[0], size[1])
 
         this.image = this.#setupImage(image)
+    }
+
+    getDirectedP() {
+        const d = [vec(0, 1), vec(1, 0), vec(0, -1), vec(-1, 0)]
+        return this.p.add(d[this.direction])
     }
 
     #setupImage(images: ImageOption[]) {
@@ -63,7 +69,7 @@ export class Sprite {
         this.q = this.p.scale(TILE_SIZE)
     }
 
-    update(...args: unknown[]) {
+    update(scene: Scene) {
         this.gs = this.gs.filter((g) => !g.next().done)
     }
 
@@ -122,12 +128,12 @@ export class Sprite {
             )
         }
 
-        ctx.strokeStyle = "black"
-        ctx.lineWidth = 2
+        // ctx.strokeStyle = "black"
+        // ctx.lineWidth = 2
 
-        ctx.beginPath()
-        ctx.strokeRect(this.q.x, this.q.y, this.size.x * TILE_SIZE, this.size.y * TILE_SIZE)
-        ctx.stroke()
+        // ctx.beginPath()
+        // ctx.strokeRect(this.q.x, this.q.y, this.size.x * TILE_SIZE, this.size.y * TILE_SIZE)
+        // ctx.stroke()
 
         ctx.restore()
     }

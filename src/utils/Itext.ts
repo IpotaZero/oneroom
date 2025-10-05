@@ -2,10 +2,13 @@ export class Itext extends HTMLElement {
     #interval
     #resolve!: () => void
 
+    isFinished = false
     finished
 
-    constructor() {
+    constructor(text?: string) {
         super()
+
+        text && (this.innerHTML = text)
 
         // すべての子ノードのうち、textノードのみをIchar要素に置き換える（子要素の中まで再帰的に探索）
         const replaceTextNodes = (parent: Node) => {
@@ -13,7 +16,6 @@ export class Itext extends HTMLElement {
 
             for (const node of childNodes) {
                 if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-
                     const ichar = new Ichar(node.textContent)
                     parent.replaceChild(ichar, node)
                 } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -43,7 +45,23 @@ export class Itext extends HTMLElement {
         if (ichars.every((ichar) => ichar.isFinished)) {
             clearInterval(this.#interval)
             this.#resolve()
+            this.isFinished = true
+            this.classList.add("text-end")
         }
+    }
+
+    finish() {
+        const ichars = Array.from(this.querySelectorAll("i-char")).filter((el): el is Ichar => el instanceof Ichar)
+
+        for (const ichar of ichars) {
+            ichar.finish()
+        }
+
+        this.isFinished = true
+
+        clearInterval(this.#interval)
+        this.#resolve()
+        this.classList.add("text-end")
     }
 }
 
@@ -69,6 +87,11 @@ class Ichar extends HTMLElement {
         if (this.#text.length <= this.#i) {
             this.isFinished = true
         }
+    }
+
+    finish() {
+        this.textContent = this.#text
+        this.isFinished = true
     }
 }
 

@@ -1,36 +1,41 @@
 import { keyboard } from "../utils/Input"
 import { vec } from "../utils/Vec"
-import { MapData } from "../Game/MapData"
 import { Sprite } from "./Sprite"
+import { Scene } from "../Game/Scene"
+import { TILE_SIZE } from "../Game/Constant"
 
 export class MapWriter extends Sprite {
     currentTileId = 0
 
-    override update(map: MapData) {
-        this.#walk(map)
+    constructor(scene: Scene) {
+        super(scene, { p: [6, 6], image: [], size: [1, 1] })
+    }
+
+    override update(scene: Scene) {
+        this.#walk()
 
         if (keyboard.pressed.has("Enter")) {
-            map.tiles[this.p.y][this.p.x] = this.currentTileId
-            map.setup()
+            scene.map.tiles[this.p.y][this.p.x] = this.currentTileId
+            scene.map.setup(scene)
         }
 
         if (keyboard.pushed.has("ShiftLeft")) {
-            map.walls[this.p.y][this.p.x] = 1 - map.walls[this.p.y][this.p.x]
-            map.setup()
+            scene.map.walls[this.p.y][this.p.x] = 1 - scene.map.walls[this.p.y][this.p.x]
+            scene.map.setup(scene)
         }
 
         if (keyboard.pushed.has("KeyS")) {
-            console.log(JSON.stringify(map.json()))
+            console.log(JSON.stringify(scene.map.json()))
         }
 
         if (keyboard.pushed.has("Space")) {
-            this.currentTileId = map.tiles[this.p.y][this.p.x]
+            this.currentTileId = scene.map.tiles[this.p.y][this.p.x]
         }
 
-        super.update()
+        super.update(scene)
     }
 
-    #walk(map: MapData) {
+    #walk() {
         if (this.state === "walking") return
 
         const v = vec(0, 0)
@@ -43,5 +48,16 @@ export class MapWriter extends Sprite {
         if (v.magnitude() === 0) return
 
         this.moveTo(this.p.add(v))
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+        super.draw(ctx)
+
+        ctx.strokeStyle = "black"
+        ctx.lineWidth = 2
+
+        ctx.beginPath()
+        ctx.strokeRect(this.q.x, this.q.y, this.size.x * TILE_SIZE, this.size.y * TILE_SIZE)
+        ctx.stroke()
     }
 }

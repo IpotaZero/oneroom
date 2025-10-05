@@ -1,11 +1,11 @@
-import { MapData } from "../Game/MapData"
+import { Scene } from "../Game/Scene"
 import { GameEvent } from "./GameEvent"
 
 export class EventSerif extends GameEvent {
     #texts: string[]
 
-    constructor(map: MapData, texts: string[]) {
-        super(map)
+    constructor(scene: Scene, texts: string[]) {
+        super(scene)
         this.#texts = texts
     }
 

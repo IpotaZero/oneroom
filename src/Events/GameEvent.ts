@@ -1,17 +1,28 @@
-import { MapData } from "../Game/MapData"
+import { Scene } from "../Game/Scene"
 import { keyboard } from "../utils/Input"
+import { Itext } from "../utils/Itext"
 
 export class GameEvent {
     g: Generator
     isFinished = false
 
     box = document.createElement("div")
+    text = document.createElement("div")
+    icon = document.createElement("img")
 
-    constructor(map: MapData) {
-        this.g = this.G(map)
+    constructor(scene: Scene) {
+        this.g = this.G(scene)
 
-        this.box.className = "hidden text-end"
+        this.box.className = "hidden"
         this.box.id = "serif-box"
+
+        this.icon.id = "serif-icon"
+        this.icon.style.display = "none"
+        this.box.appendChild(this.icon)
+
+        this.text.id = "text-box"
+        this.box.appendChild(this.text)
+
         document.body.querySelector("#container")!.appendChild(this.box)
     }
 
@@ -27,7 +38,7 @@ export class GameEvent {
         this.box.classList.add("hidden")
     }
 
-    *G(map: MapData): Generator<any, any, any> {}
+    *G(scene: Scene): Generator<any, any, any> {}
 
     update() {
         const { done } = this.g.next()
@@ -43,8 +54,34 @@ export class GameEvent {
         const copy = [...texts]
 
         while (copy.length > 0) {
-            this.box.innerHTML = `<i-text>${copy.shift()!}</i-text>`
+            const command = copy.shift()!
+
+            if (command === "character") {
+                const url = copy.shift()!
+
+                if (url === "none") {
+                    this.icon.style.display = "none"
+                } else {
+                    this.icon.style.display = ""
+                    this.icon.src = `assets/images/icon/${url}`
+                }
+
+                continue
+            }
+
+            const itext = new Itext(command)
+
+            this.text.innerHTML = ""
+            this.text.appendChild(itext)
+
             while (!keyboard.longPressed.has("KeyZ")) yield
+            yield
+
+            if (!itext.isFinished) {
+                itext.finish()
+                while (!keyboard.longPressed.has("KeyZ")) yield
+            }
+
             yield
         }
 

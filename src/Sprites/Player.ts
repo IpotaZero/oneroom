@@ -2,10 +2,11 @@ import { keyboard } from "../utils/Input"
 import { vec } from "../utils/Vec"
 import { Sprite } from "./Sprite"
 import { MapData } from "../Game/MapData"
+import { Scene } from "../Game/Scene"
 
 export class Player extends Sprite {
-    constructor(map: MapData) {
-        super(map, {
+    constructor(scene: Scene) {
+        super(scene, {
             p: [10, 10],
             image: [
                 { url: "ユウナ.png", p: [0, 0], size: [16, 16] },
@@ -17,9 +18,9 @@ export class Player extends Sprite {
         })
     }
 
-    override update(map: MapData) {
-        this.#walk(map)
-        super.update()
+    override update(scene: Scene) {
+        this.#walk(scene.map)
+        super.update(scene)
     }
 
     #walk(map: MapData) {
