@@ -1,5 +1,7 @@
 import { keyboard } from "./Input"
 
+type Handler = () => void
+
 export class Command {
     container = document.createElement("div")
 
@@ -8,20 +10,16 @@ export class Command {
     #history: string[] = []
 
     #buttonFamily: Record<string, HTMLButtonElement[]> = {}
-
-    #onHandler: Record<string, () => void> = {}
-    #onLeftHandler: Record<string, () => void> = {}
-    #onBackHandler = () => {}
+    #onHandler: Record<string, Handler> = {}
+    #onLeftHandler: Record<string, Handler> = {}
+    #onBackHandler: Handler = () => {}
 
     constructor(html: string) {
         this.container.id = "menu"
         this.container.className = "hidden"
         this.container.innerHTML = html
 
-        this.container.querySelectorAll(".buttons").forEach((buttons) => {
-            this.#buttonFamily[buttons.id] = Array.from(buttons.querySelectorAll("button"))
-        })
-
+        this.#initButtonFamily()
         this.#goto("first")
 
         requestAnimationFrame(() => {
@@ -34,42 +32,43 @@ export class Command {
 
         if (keyboard.pushed.has("KeyX")) {
             this.#back()
-            return
-        }
-
-        if (keyboard.pushed.has("KeyZ")) {
+        } else if (keyboard.pushed.has("KeyZ")) {
             this.#select()
-            return
         }
     }
 
-    on(id: string, handler: () => void) {
+    on(id: string, handler: Handler) {
         this.#onHandler[id] = handler
     }
 
-    onLeft(id: string, handler: () => void) {
+    onLeft(id: string, handler: Handler) {
         this.#onLeftHandler[id] = handler
     }
 
-    onBack(handler: () => void) {
+    onBack(handler: Handler) {
         this.#onBackHandler = handler
     }
 
+    // --- Private Methods ---
+
+    #initButtonFamily() {
+        this.container.querySelectorAll(".buttons").forEach((buttons) => {
+            this.#buttonFamily[buttons.id] = Array.from(buttons.querySelectorAll("button"))
+        })
+    }
+
     #getCurrentButtons(): HTMLButtonElement[] | undefined {
-        return this.#buttonFamily[this.#history.at(-1)!]
+        return this.#buttonFamily[this.#currentBranch]
     }
 
     #move() {
         const currentButtons = this.#getCurrentButtons()
-
         if (!currentButtons) return
 
         if (keyboard.longPressed.has("ArrowUp")) {
             this.#index = (this.#index + currentButtons.length - 1) % currentButtons.length
             this.#updateClass()
-        }
-
-        if (keyboard.longPressed.has("ArrowDown")) {
+        } else if (keyboard.longPressed.has("ArrowDown")) {
             this.#index = (this.#index + 1) % currentButtons.length
             this.#updateClass()
         }
@@ -81,39 +80,39 @@ export class Command {
             return
         }
 
-        if (this.#history.length === 0) return
+        if (this.#history.length === 0) throw new Error("空")
 
         this.#history.pop()
+        const prevId = this.#history.pop()!
 
+        const buttons = this.#buttonFamily[prevId]!
         const index = Math.max(
-            this.#getCurrentButtons()!.findIndex((b) => b.classList.contains("selected")),
+            buttons.findIndex((b) => b.classList.contains("selected")),
             0,
         )
 
-        this.#goto(this.#history.pop()!)
+        this.#goto(prevId)
 
         this.#index = index
         this.#updateClass()
     }
 
     #select() {
-        const link = this.#getCurrentButtons()![this.#index].dataset["link"]
+        const currentButtons = this.#getCurrentButtons()
+        if (!currentButtons) return
 
+        const link = currentButtons[this.#index]?.dataset["link"]
         if (link) {
             this.#goto(link)
         }
     }
 
     #goto(id: string) {
-        const buttons = this.#buttonFamily[id]
-
         this.#onLeftHandler[this.#currentBranch]?.()
-
         this.#currentBranch = id
-
         this.#onHandler[this.#currentBranch]?.()
 
-        if (buttons) {
+        if (this.#buttonFamily[id]) {
             this.#index = 0
             this.#history.push(id)
             this.#updateClass()
@@ -121,8 +120,11 @@ export class Command {
     }
 
     #updateClass() {
-        const currentButtons = this.#getCurrentButtons()!
-        currentButtons.forEach((b) => b.classList.remove("selected"))
-        currentButtons[this.#index].classList.add("selected")
+        const currentButtons = this.#getCurrentButtons()
+        if (!currentButtons) return
+
+        currentButtons.forEach((b, i) => {
+            b.classList.toggle("selected", i === this.#index)
+        })
     }
 }
