@@ -20,7 +20,7 @@ export class EventTV extends GameEvent {
             "うわ、誰?",
             "character",
             "nwami.png",
-            "僕の名前はナミ゛! 君を連れてきた張本人さ!",
+            "僕の名前はナ゛ミ! 君を連れてきた張本人さ!",
             "character",
             "ユウナ.png",
             "なんで連れてきたんすか?",

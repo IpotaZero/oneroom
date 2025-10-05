@@ -35,6 +35,7 @@ export class GameEvent {
         this.box.addEventListener("transitionend", () => {
             this.box.remove()
         })
+
         this.box.classList.add("hidden")
     }
 
