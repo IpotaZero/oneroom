@@ -1,5 +1,6 @@
 import { EventSerif } from "../Events/EventSerif"
 import { GameEvent } from "../Events/GameEvent"
+import { Command } from "../utils/Command"
 import { keyboard } from "../utils/Input"
 import { Scene } from "./Scene"
 
@@ -67,20 +68,12 @@ export class ModeEvent extends Mode {
 }
 
 export class ModeMenu extends Mode {
-    #container = document.createElement("div")
-    #index = 0
-
-    #history: string[] = []
-
-    #buttonFamily: Record<string, HTMLButtonElement[]> = {}
+    readonly #command: Command
 
     constructor(scene: Scene) {
         super(scene)
 
-        this.#container.id = "menu"
-        this.#container.className = "hidden"
-
-        this.#container.innerHTML = `
+        this.#command = new Command(`
             <div id="left">
                 <div class="buttons" id="first">
                     <button data-link="resume">再開</button>
@@ -110,109 +103,39 @@ export class ModeMenu extends Mode {
                     <button>紫の鍵</button>
                 </div>
             </div>
-        `
+        `)
 
-        document.querySelector("#container")!.appendChild(this.#container)
-
-        this.#container.querySelectorAll(".buttons").forEach((buttons) => {
-            this.#buttonFamily[buttons.id] = Array.from(buttons.querySelectorAll("button"))
+        this.#command.on("resume", () => {
+            this.scene.goto(new ModePlay(this.scene))
         })
 
-        this.#goto("first")
-
-        requestAnimationFrame(() => {
-            this.#container.classList.remove("hidden")
+        this.#command.on("items", () => {
+            this.#command.container.querySelector("#characters")!.classList.add("hidden")
+            this.#command.container.querySelector("#items")!.classList.remove("hidden")
         })
+
+        this.#command.onBack(() => {
+            this.scene.goto(new ModePlay(this.scene))
+        })
+
+        this.#command.onLeft("items", () => {
+            this.#command.container.querySelector("#characters")!.classList.remove("hidden")
+            this.#command.container.querySelector("#items")!.classList.add("hidden")
+        })
+
+        this.#command.on("key-red", () => {
+            this.scene.goto(new ModeEvent(scene, [new EventSerif(scene, ["てすと"])]))
+        })
+
+        document.querySelector("#container")!.appendChild(this.#command.container)
     }
 
     update() {
-        this.#move()
-
-        if (keyboard.pushed.has("KeyX")) {
-            this.#back()
-            return
-        }
-
-        if (keyboard.pushed.has("KeyZ")) {
-            this.#select()
-            return
-        }
+        this.#command.update()
     }
 
     end() {
-        this.#container.ontransitionend = () => this.#container.remove()
+        this.#command.container.ontransitionend = () => this.#command.container.remove()
         document.querySelector("#menu")?.classList.add("hidden")
-    }
-
-    #getCurrentButtons() {
-        return this.#buttonFamily[this.#history.at(-1)!]
-    }
-
-    #move() {
-        const currentButtons = this.#getCurrentButtons()
-
-        if (keyboard.longPressed.has("ArrowUp")) {
-            this.#index = (this.#index + currentButtons.length - 1) % currentButtons.length
-            this.#updateClass()
-        }
-
-        if (keyboard.longPressed.has("ArrowDown")) {
-            this.#index = (this.#index + 1) % currentButtons.length
-            this.#updateClass()
-        }
-    }
-
-    #back() {
-        if (this.#history.at(-1)! === "first") {
-            this.scene.goto(new ModePlay(this.scene))
-            return
-        } else if (this.#history.at(-1)! === "items") {
-            this.#container.querySelector("#characters")!.classList.remove("hidden")
-            this.#container.querySelector("#items")!.classList.add("hidden")
-        }
-
-        this.#history.pop()
-
-        const index = Math.max(
-            this.#getCurrentButtons().findIndex((b) => b.classList.contains("selected")),
-            0,
-        )
-
-        this.#goto(this.#history.pop()!)
-
-        this.#index = index
-    }
-
-    #select() {
-        const link = this.#getCurrentButtons()[this.#index].dataset["link"]
-
-        if (link === "resume") {
-            this.scene.goto(new ModePlay(this.scene))
-        } else if (link === "items") {
-            this.#container.querySelector("#characters")!.classList.add("hidden")
-            this.#container.querySelector("#items")!.classList.remove("hidden")
-        } else if (link === "key-red") {
-            this.scene.goto(new ModeEvent(this.scene, [new EventSerif(this.scene, ["テスト"])]))
-        }
-
-        if (link) {
-            this.#goto("items")
-        }
-    }
-
-    #goto(id: string) {
-        const buttons = this.#container.querySelector(`#${id}`)
-
-        if (buttons) {
-            this.#index = 0
-            this.#history.push(id)
-            this.#updateClass()
-        }
-    }
-
-    #updateClass() {
-        const currentButtons = this.#getCurrentButtons()
-        currentButtons.forEach((b) => b.classList.remove("selected"))
-        currentButtons[this.#index].classList.add("selected")
     }
 }
