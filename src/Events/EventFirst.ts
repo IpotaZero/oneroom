@@ -10,14 +10,10 @@ export class EventFirst extends GameEvent {
 
         const player = scene.map.player
 
-        player.direction = 1
-        yield* Array(15)
-        player.direction = 2
-        yield* Array(15)
-        player.direction = 3
-        yield* Array(15)
-        player.direction = 0
-        yield* Array(15)
+        yield* player.moveBy(vec(1, 0), scene.map, { frame: 15 })
+        yield* player.moveBy(vec(0, 1), scene.map, { frame: 15 })
+        yield* player.moveBy(vec(-1, 0), scene.map, { frame: 15 })
+        yield* player.moveBy(vec(0, -1), scene.map, { frame: 15 })
 
         yield* this.say(["どこらぁ?"])
     }

@@ -19,13 +19,13 @@ export class Scene {
     readonly items: string[] = []
 
     readonly #ctx
-    #mode: "play" | "event" | "menu" = "play"
+    #mode: "play" | "event" | "menu" = "event"
 
     readonly #menu = {
         index: 0,
     }
 
-    readonly #event: { event: GameEvent } = { event: null as unknown as GameEvent }
+    #modeEvent!: ModeEvent
 
     constructor() {
         const cvs = document.createElement("canvas")
@@ -42,7 +42,7 @@ export class Scene {
         this.map = new MapData(mapdata, new Player(this), this)
         // this.map = new MapData(mapdata, new MapWriter(this), this)
 
-        this.#event.event = new EventFirst(this)
+        this.#modeEvent = new ModeEvent([new EventFirst(this)])
 
         this.ready = this.map.ready
     }
@@ -53,20 +53,15 @@ export class Scene {
             this.#draw()
         } else if (this.#mode === "event") {
             this.#draw()
-            this.#modeEvent()
+
+            if (this.#modeEvent.update()) {
+                this.#mode = "play"
+            }
         } else if (this.#mode === "menu") {
             this.#modeMenu()
         }
 
         Input.update()
-    }
-
-    #modeEvent() {
-        const done = this.#event.event.update()
-
-        if (done) {
-            this.#mode = "play"
-        }
     }
 
     #modePlay() {
@@ -82,22 +77,15 @@ export class Scene {
     }
 
     #action() {
-        this.map.realSprites
-            .filter((s) => {
-                for (let i = 0; i < s.size.y; i++) {
-                    for (let j = 0; j < s.size.x; j++) {
-                        if (s.p.add(vec(j, i)).equals(this.map.player.getDirectedP())) return true
-                    }
-                }
-            })
-            .forEach((s) => {
-                const event = s.action(this.map, this)
+        const event = this.map.realSprites
+            .filter((s) => s.getExistsP().some((p) => p.equals(this.map.player.getDirectedP())))
+            .map((s) => s.action(this.map, this))
+            .filter((s) => s instanceof GameEvent)
 
-                if (event) {
-                    this.#event.event = event
-                    this.#mode = "event"
-                }
-            })
+        if (event.length > 0) {
+            this.#modeEvent = new ModeEvent(event)
+            this.#mode = "event"
+        }
     }
 
     #gotoMenu() {
@@ -155,36 +143,26 @@ export class Scene {
     }
 }
 
-class Mode {
-    update() {}
-}
+class ModeEvent {
+    #currentEvent: GameEvent
+    #eventQueue: GameEvent[] = []
 
-class ModeEvent extends Mode {
-    #currentEvent!: GameEvent
-    #eventQueue!: GameEvent[]
-
-    isFinished = false
-
-    constructor(readonly events: GameEvent[]) {
-        super()
-
+    constructor(events: readonly GameEvent[]) {
         const copy = [...events]
 
-        if (copy.length === 0) {
-            this.isFinished = true
-        } else {
-            this.#currentEvent = copy.shift()!
-            this.#eventQueue = copy
-        }
+        this.#currentEvent = copy.shift()!
+        this.#eventQueue = copy
     }
 
-    override update(): void {
+    update() {
         const done = this.#currentEvent.update()
 
-        if (this.#eventQueue.length === 0) {
-            this.isFinished = true
-        } else if (done) {
-            this.#currentEvent = this.#eventQueue.shift()!
+        if (done) {
+            if (this.#eventQueue.length === 0) {
+                return true
+            } else {
+                this.#currentEvent = this.#eventQueue.shift()!
+            }
         }
     }
 }

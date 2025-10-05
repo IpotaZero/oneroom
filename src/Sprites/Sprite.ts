@@ -26,13 +26,24 @@ export class Sprite {
         this.p = vec(p[0], p[1])
         this.#updateQ()
         this.size = vec(size[0], size[1])
-
         this.image = this.#setupImage(image)
     }
 
     getDirectedP() {
         const d = [vec(0, 1), vec(1, 0), vec(0, -1), vec(-1, 0)]
         return this.p.add(d[this.direction])
+    }
+
+    getExistsP() {
+        const ps = []
+
+        for (let i = 0; i < this.size.y; i++) {
+            for (let j = 0; j < this.size.x; j++) {
+                ps.push(this.p.add(vec(j, i)))
+            }
+        }
+
+        return ps
     }
 
     #setupImage(images: ImageOption[]) {
@@ -80,7 +91,7 @@ export class Sprite {
         this.#updateQ()
     }
 
-    moveBy(v: Vec, map: MapData) {
+    moveBy(v: Vec, map: MapData, { frame = 3 }: { frame?: number } = {}) {
         // vから尤もらしい方向を取得
         if (v.x === 1 && v.y === 0) this.direction = 1
         else if (v.x === 0 && v.y === 1) this.direction = 0
@@ -91,28 +102,30 @@ export class Sprite {
 
         for (let i = 0; i < this.size.y; i++) {
             for (let j = 0; j < this.size.x; j++) {
-                if (w[this.p.y + v.y + i]?.[this.p.x + v.x + j] === 1) return
+                if (w[this.p.y + v.y + i]?.[this.p.x + v.x + j] === 1) return Array()
             }
         }
 
         this.p = this.p.add(v)
 
-        this.gs.push(
-            function* (this: Sprite) {
-                this.state = "walking"
+        const g = function* (this: Sprite) {
+            this.state = "walking"
 
-                const q = this.q
-                const l = this.p.scale(TILE_SIZE).sub(q)
+            const q = this.q
+            const l = this.p.scale(TILE_SIZE).sub(q)
 
-                for (let i = 0; i < 3; i++) {
-                    this.q = q.add(l.scale((i + 1) / 3))
+            for (let i = 0; i < frame; i++) {
+                this.q = q.add(l.scale((i + 1) / frame))
 
-                    if (i === 2) this.state = "standing"
+                if (i === 2) this.state = "standing"
 
-                    yield
-                }
-            }.bind(this)(),
-        )
+                yield
+            }
+        }.bind(this)()
+
+        this.gs.push(g)
+
+        return g
     }
 
     draw(ctx: CanvasRenderingContext2D) {
