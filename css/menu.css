@@ -51,7 +51,7 @@
         padding: 0 1em;
 
         .character {
-            height: fit-content;
+            height: 6em;
             width: 100%;
 
             padding: 0.5em;
@@ -60,11 +60,11 @@
             background-color: #111c;
 
             display: flex;
+            gap: 1em;
 
             .status-icon {
-                height: fit-content;
+                height: 100%;
                 aspect-ratio: 1;
-                margin-right: 1em;
             }
         }
     }
