@@ -8,7 +8,7 @@ export class MapWriter extends Sprite {
     currentTileId = 0
 
     constructor(scene: Scene) {
-        super(scene, { p: [6, 6], image: [], size: [1, 1] })
+        super(scene, { id: "map-writer", p: [6, 6], image: [], size: [1, 1] })
     }
 
     override update(scene: Scene) {

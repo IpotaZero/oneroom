@@ -7,14 +7,32 @@ import { Scene } from "../Game/Scene"
 export class Player extends Sprite {
     constructor(scene: Scene) {
         super(scene, {
+            id: "player",
             p: [10, 10],
             image: [
-                { url: "ユウナ.png", p: [0, 0], size: [16, 16] },
-                { url: "ユウナ.png", p: [16, 0], size: [16, 16] },
-                { url: "ユウナ.png", p: [32, 0], size: [16, 16] },
-                { url: "ユウナ.png", p: [48, 0], size: [16, 16] },
+                [
+                    { url: "ユウナ.png", p: [0, 0], size: [16, 16] },
+                    { url: "ユウナ.png", p: [0, 16], size: [16, 16] },
+                    { url: "ユウナ.png", p: [0, 32], size: [16, 16] },
+                ],
+                [
+                    { url: "ユウナ.png", p: [16, 0], size: [16, 16] },
+                    { url: "ユウナ.png", p: [16, 16], size: [16, 16] },
+                    { url: "ユウナ.png", p: [16, 32], size: [16, 16] },
+                ],
+                [
+                    { url: "ユウナ.png", p: [32, 0], size: [16, 16] },
+                    { url: "ユウナ.png", p: [32, 16], size: [16, 16] },
+                    { url: "ユウナ.png", p: [32, 32], size: [16, 16] },
+                ],
+                [
+                    { url: "ユウナ.png", p: [48, 0], size: [16, 16] },
+                    { url: "ユウナ.png", p: [48, 16], size: [16, 16] },
+                    { url: "ユウナ.png", p: [48, 32], size: [16, 16] },
+                ],
             ],
             size: [1, 1],
+            creature: false,
         })
     }
 
@@ -35,6 +53,6 @@ export class Player extends Sprite {
 
         if (v.magnitude() === 0) return
 
-        this.moveBy(v, map)
+        this.moveBy(v, map, { frame: 3 })
     }
 }

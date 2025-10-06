@@ -35,4 +35,14 @@ button {
     color: whitesmoke;
 
     font-family: mincho;
+
+    &.selected {
+        text-shadow: 0 0 0.1em whitesmoke;
+
+        &::before {
+            position: absolute;
+            content: "→";
+            animation: arrow 2s infinite ease-in-out;
+        }
+    }
 }

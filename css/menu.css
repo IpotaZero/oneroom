@@ -20,17 +20,8 @@
 
     .title {
         width: 100%;
-        border-bottom: whitesmoke 1px solid;
-    }
-
-    button.selected {
-        text-shadow: 0 0 0.5dvh whitesmoke;
-
-        &::before {
-            position: absolute;
-            content: "→";
-            animation: arrow 2s infinite ease-in-out;
-        }
+        border-bottom: whitesmoke 0.1em solid;
+        padding-bottom: 0.5em;
     }
 
     #left {
@@ -45,13 +36,28 @@
             display: flex;
             flex-direction: column;
             background-color: #111c;
-            border: whitesmoke 1px solid;
+            border: whitesmoke 0.1em solid;
+            padding-bottom: 0.2em;
         }
 
-        #money {
-            text-align: right;
-            background-color: #111c;
-            border: whitesmoke 1px solid;
+        #under {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+
+            #time {
+                text-align: right;
+                background-color: #111c;
+                border: whitesmoke 0.1em solid;
+                height: 1.63em;
+            }
+
+            #money {
+                text-align: right;
+                background-color: #111c;
+                border: whitesmoke 0.1em solid;
+                height: 1.63em;
+            }
         }
     }
 
@@ -66,12 +72,12 @@
             height: 100%;
 
             .character {
-                height: 6em;
+                height: 5.1em;
                 width: 100%;
 
                 padding: 0.5em;
 
-                border: whitesmoke 1px solid;
+                border: whitesmoke 0.1em solid;
                 background-color: #111c;
 
                 display: flex;
@@ -91,7 +97,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            border: whitesmoke 1px solid;
+            border: whitesmoke 0.1em solid;
             background-color: #111c;
             padding: 1em;
         }

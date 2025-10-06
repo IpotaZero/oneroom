@@ -4,41 +4,46 @@ import { MapData } from "./MapData"
 import { Player } from "../Sprites/Player"
 import { Input } from "../utils/Input"
 import { MapWriter } from "../Sprites/MapWriter"
-import { EventFirst } from "../Events/EventFirst"
+import { EventFirst } from "../Events/Events/EventFirst"
 
 import mapdata from "../../assets/mapdata/mapdata.json"
 import { Mode, ModeEvent, ModePlay } from "./Mode"
+import { Item } from "./Item"
+import { EventKey } from "../Events/Events/EventKey"
+import { EventHowToPlay } from "../Events/Events/EventHowToPlay"
+import { Character } from "./Character"
 
 export class Scene {
-    readonly ready
+    readonly ready: Promise<void>
+    readonly playStart = performance.now()
 
-    readonly camera
-    readonly map
+    readonly camera: Camera
+    readonly map: MapData
 
-    readonly flags: string[] = []
-    readonly items: string[] = []
+    readonly container = document.querySelector("#container") as HTMLDivElement
 
-    readonly #ctx
+    flags: string[] = []
+    items: Item[] = []
+
+    characters: Character[] = [new Character("ユウナ", "ユウナ.png")]
 
     #mode: Mode
 
+    readonly cvs
+    readonly #ctx: CanvasRenderingContext2D
+
     constructor() {
-        const cvs = document.createElement("canvas")
-        cvs.width = WIDTH
-        cvs.height = HEIGHT
-
-        this.#ctx = cvs.getContext("2d")!
-        this.#ctx.imageSmoothingEnabled = false
-
-        document.body.querySelector("#container")!.appendChild(cvs)
+        const { cvs, ctx } = this.#createCtx()
+        this.cvs = cvs
+        this.#ctx = ctx
 
         this.camera = new Camera()
 
         this.map = new MapData(mapdata, new Player(this), this)
         // this.map = new MapData(mapdata, new MapWriter(this), this)
 
-        // this.#mode = new ModeEvent(this, [new EventFirst(this)])
-        this.#mode = new ModePlay(this)
+        this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
+        // this.#mode = new ModePlay(this)
 
         this.ready = this.map.ready
     }
@@ -52,6 +57,19 @@ export class Scene {
     goto(mode: Mode) {
         this.#mode.end()
         this.#mode = mode
+    }
+
+    #createCtx() {
+        const cvs = document.createElement("canvas")
+        cvs.width = WIDTH
+        cvs.height = HEIGHT
+
+        const ctx = cvs.getContext("2d")!
+        ctx.imageSmoothingEnabled = false
+
+        this.container.appendChild(cvs)
+
+        return { cvs, ctx }
     }
 
     #draw() {

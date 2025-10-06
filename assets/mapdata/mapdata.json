@@ -1,53 +1,68 @@
 {
     "sprites": [
         {
-            "class": "creature",
+            "class": "event",
             "options": {
+                "id": "trash",
                 "p": [1, 12],
                 "size": [1, 1],
-                "image": [{ "url": "trash.png", "p": [0, 0], "size": [32, 32] }],
-                "serif": ["動くゴミ箱。"]
+                "image": [[{ "url": "trash.png", "p": [0, 0], "size": [32, 32] }]],
+                "event": "trash",
+                "creature": true
+            }
+        },
+        {
+            "class": "box",
+            "options": {
+                "id": "box",
+                "p": [4, 12],
+                "size": [1, 1],
+                "image": [[{ "url": "box.png", "p": [0, 0], "size": [32, 32] }]]
             }
         },
         {
             "class": "object",
-            "options": { "p": [2, 3], "size": [3, 1], "image": [{ "url": "shelf.png", "p": [0, 0], "size": [96, 32] }] }
+            "options": {
+                "id": "shelf",
+                "p": [2, 3],
+                "size": [3, 1],
+                "image": [[{ "url": "shelf.png", "p": [0, 0], "size": [96, 32] }]]
+            }
         },
         {
             "class": "event",
             "options": {
+                "id": "tv",
                 "p": [2, 2],
                 "size": [3, 2],
-                "image": [{ "url": "tv.png", "p": [0, 0], "size": [48, 32] }],
+                "image": [
+                    [{ "url": "tv.png", "p": [0, 0], "size": [48, 32] }],
+                    [{ "url": "tv.png", "p": [48, 0], "size": [48, 32] }],
+                    [{ "url": "tv.png", "p": [96, 0], "size": [48, 32] }]
+                ],
                 "event": "tv"
             }
         },
         {
-            "class": "serif",
+            "class": "event",
             "options": {
+                "id": "door",
                 "p": [9, 1],
                 "size": [1, 2],
-                "image": [{ "url": "door.png", "p": [0, 0], "size": [32, 64] }],
-                "serif": [
-                    "開かない。",
-                    "character",
-                    "ユウナ.png",
-                    "5個鍵穴がある!",
-                    "そういえばポケットに何か入ってた。"
-                ]
+                "image": [[{ "url": "door.png", "p": [0, 0], "size": [32, 64] }]],
+                "event": "door"
             }
         },
         {
             "class": "serif",
             "options": {
+                "id": "wall",
                 "p": [8, 2],
                 "size": [1, 1],
                 "image": [],
                 "serif": [
-                    "壁に何か書かれている。",
                     "『新しく入った人は一本書き足してください。』",
-                    "character",
-                    "ユウナ.png",
+                    { "type": "character", "url": "ユウナ.png" },
                     "えーと......25人目かぁ。"
                 ]
             }

@@ -1,7 +1,7 @@
-import { EventSerif } from "../Events/EventSerif"
 import { GameEvent } from "../Events/GameEvent"
 import { Command } from "../utils/Command"
-import { keyboard } from "../utils/Input"
+import { Input, keyboard } from "../utils/Input"
+import { Character } from "./Character"
 import { Scene } from "./Scene"
 
 export class Mode {
@@ -27,7 +27,7 @@ export class ModePlay extends Mode {
         if (keyboard.pushed.has("KeyZ")) {
             const events = this.scene.map.realSprites
                 .filter((s) => s.getExistsP().some((p) => p.equals(this.scene.map.player.getDirectedP())))
-                .map((s) => s.action(this.scene.map, this))
+                .map((s) => s.action(this.scene))
                 .filter((s) => s instanceof GameEvent)
 
             if (events.length > 0) {
@@ -70,6 +70,8 @@ export class ModeEvent extends Mode {
 export class ModeMenu extends Mode {
     readonly #command: Command
 
+    #time
+
     constructor(scene: Scene) {
         super(scene)
 
@@ -81,29 +83,23 @@ export class ModeMenu extends Mode {
                     <button data-link="end">終了</button>
                 </div>
 
-                <div id="money">0円</div>
+                <div id="under">
+                    <div id="time"></div>
+                    <div id="money">0円</div>
+                </div>
             </div>
             <div id="right">
                 <div id="characters">
-                    <div class="character">
-                        <img class="status-icon" src="assets/images/icon/ユウナ.png" alt="" />
-                        <div class="status">
-                            ユウナ <br />
-                            LV: 9 <br />
-                            HP: 9 MP: 0 SAN: 20<br />
-                        </div>
-                    </div>
+                    ${scene.characters.map((c) => this.#createCharacterStatus(c)).join("")}
                 </div>
                 <div class="buttons hidden" id="items">
                     <span class="title">持物</span>
-                    <button data-link="key-red">赤い鍵</button>
-                    <button>青い鍵</button>
-                    <button>緑の鍵</button>
-                    <button>黄色の鍵</button>
-                    <button>紫の鍵</button>
+                    ${scene.items.map((item) => `<button data-link="item-${item.id}">${item.id}</button>`).join("")}
                 </div>
             </div>
         `)
+
+        this.#time = this.#command.container.querySelector("#time")!
 
         this.#command.on("resume", () => {
             this.scene.goto(new ModePlay(this.scene))
@@ -114,8 +110,8 @@ export class ModeMenu extends Mode {
             this.#command.container.querySelector("#items")!.classList.remove("hidden")
         })
 
-        this.#command.onBack(() => {
-            this.scene.goto(new ModePlay(this.scene))
+        this.#command.on("item-.*", (command) => {
+            this.scene.goto(new ModeEvent(this.scene, [scene.items[command.index].event()]))
         })
 
         this.#command.onLeft("items", () => {
@@ -123,19 +119,41 @@ export class ModeMenu extends Mode {
             this.#command.container.querySelector("#items")!.classList.add("hidden")
         })
 
-        this.#command.on("key-red", () => {
-            this.scene.goto(new ModeEvent(scene, [new EventSerif(scene, ["てすと"])]))
+        this.#command.onBack(() => {
+            this.scene.goto(new ModePlay(this.scene))
         })
 
+        this.#command.container.id = "menu"
         document.querySelector("#container")!.appendChild(this.#command.container)
     }
 
     update() {
+        const elapsed = performance.now() - this.scene.playStart
+        const totalSeconds = Math.floor(elapsed / 1000)
+        const hours = Math.floor(totalSeconds / 3600)
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+        const seconds = totalSeconds % 60
+        this.#time.textContent = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`
         this.#command.update()
     }
 
     end() {
         this.#command.container.ontransitionend = () => this.#command.container.remove()
         document.querySelector("#menu")?.classList.add("hidden")
+    }
+
+    #createCharacterStatus(c: Character) {
+        return `
+            <div class="character">
+                <img class="status-icon" src="assets/images/icon/${c.icon}" alt="" />
+                <div class="status">
+                    ${c.name} <br />
+                    LV: ${c.status.lv} <br />
+                    HP: ${c.status.hp} MP: ${c.status.mp} SAN: ${c.status.san}<br />
+                </div>
+            </div>
+        `
     }
 }

@@ -1,6 +1,6 @@
 .text-end {
     &::after {
-        content: "/";
+        content: "▼";
         animation: blink 1s steps(1, end) infinite;
     }
 }
