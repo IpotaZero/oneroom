@@ -4,8 +4,7 @@ import { keyboard } from "../utils/Input"
 import { Itext } from "../utils/Itext"
 
 export class GameEvent {
-    #g: Generator
-    #isFinished = false
+    #g: Generator<void, GameEvent | void, void>
 
     #box: HTMLDivElement
     #text: HTMLDivElement
@@ -34,7 +33,7 @@ export class GameEvent {
         this.#box.appendChild(this.#text)
     }
 
-    destroy() {
+    #destroy() {
         if (this.#box.classList.contains("hidden")) {
             this.#box.remove()
             return
@@ -47,14 +46,14 @@ export class GameEvent {
         this.#box.classList.add("hidden")
     }
 
-    protected *G(scene: Scene): Generator<any, any, any> {}
+    protected *G(scene: Scene): Generator<void, GameEvent | void, void> {}
 
     update() {
-        const { done } = this.#g.next()
-        if (done) {
-            this.destroy()
+        const result = this.#g.next()
+        if (result.done) {
+            this.#destroy()
         }
-        return done
+        return result
     }
 
     protected *say(texts: (string | SayCommand)[]) {
@@ -122,6 +121,10 @@ export class GameEvent {
         return selected
     }
 
+    protected *wait() {
+        while (!keyboard.longPressed.has("KeyZ") && !keyboard.longPressed.has("KeyX")) yield
+    }
+
     #handleCharacterCommand(url: string) {
         if (url === "none") {
             this.#icon.style.display = "none"
@@ -146,10 +149,6 @@ export class GameEvent {
         }
 
         yield
-    }
-
-    protected *wait() {
-        while (!keyboard.longPressed.has("KeyZ") && !keyboard.longPressed.has("KeyX")) yield
     }
 }
 

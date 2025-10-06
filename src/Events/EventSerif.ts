@@ -9,7 +9,7 @@ export class EventSerif extends GameEvent {
         this.#texts = texts
     }
 
-    *G() {
+    *G(): Generator<void, void | GameEvent, void> {
         yield* this.say(this.#texts)
     }
 }

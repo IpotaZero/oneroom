@@ -5,9 +5,9 @@ import { Character } from "./Character"
 import { Scene } from "./Scene"
 
 export class Mode {
-    sceneRef
+    sceneRef: WeakRef<Scene>
 
-    get scene() {
+    get scene(): Scene {
         return this.sceneRef.deref()!
     }
 
@@ -55,9 +55,13 @@ export class ModeEvent extends Mode {
     }
 
     update() {
-        const done = this.#currentEvent.update()
+        const result = this.#currentEvent.update()
 
-        if (done) {
+        if (result.done) {
+            if (result.value instanceof GameEvent) {
+                this.#eventQueue.push(result.value)
+            }
+
             if (this.#eventQueue.length === 0) {
                 this.scene.goto(new ModePlay(this.scene))
             } else {
@@ -124,7 +128,7 @@ export class ModeMenu extends Mode {
         })
 
         this.#command.container.id = "menu"
-        document.querySelector("#container")!.appendChild(this.#command.container)
+        scene.container.appendChild(this.#command.container)
     }
 
     update() {

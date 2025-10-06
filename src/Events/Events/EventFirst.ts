@@ -3,7 +3,7 @@ import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
 
 export class EventFirst extends GameEvent {
-    *G(scene: Scene) {
+    *G(scene: Scene): Generator<void, void | GameEvent, void> {
         yield* Array(30)
 
         yield* this.say([{ type: "character", url: "ユウナ.png" }, "ん......ここぁ"])

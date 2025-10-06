@@ -1,9 +1,10 @@
 import { Scene } from "../../Game/Scene"
 import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
+import { EventDoor } from "./EventDoor"
 
 export class EventTV extends GameEvent {
-    *G(scene: Scene) {
+    *G(scene: Scene): Generator<void, void | GameEvent, void> {
         const player = scene.map.player
 
         if (player.direction !== 2) return

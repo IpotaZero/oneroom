@@ -4,7 +4,7 @@ import { EventKey } from "./EventKey"
 import { GameEvent } from "../GameEvent"
 
 export class EventDoor extends GameEvent {
-    *G(scene: Scene) {
+    *G(scene: Scene): Generator<void, void | GameEvent, void> {
         const chY = { type: "character", url: "ユウナ.png" } as const
 
         const keys = ["赤いカギ", "青いカギ", "緑のカギ", "黄色いカギ", "紫のカギ"]

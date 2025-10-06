@@ -1,17 +1,19 @@
-import { Camera } from "./Camera"
 import { WIDTH, HEIGHT, TILE_SIZE } from "./Constant"
-import { MapData } from "./MapData"
-import { Player } from "../Sprites/Player"
 import { Input } from "../utils/Input"
-import { MapWriter } from "../Sprites/MapWriter"
-import { EventFirst } from "../Events/Events/EventFirst"
 
-import mapdata from "../../assets/mapdata/mapdata.json"
+import { Camera } from "./Camera"
+import { MapData } from "./MapData"
+import { Character } from "./Character"
 import { Mode, ModeEvent, ModePlay } from "./Mode"
 import { Item } from "./Item"
-import { EventKey } from "../Events/Events/EventKey"
+
+import { Player } from "../Sprites/Player"
+import { MapWriter } from "../Sprites/MapWriter"
+
+import { EventFirst } from "../Events/Events/EventFirst"
 import { EventHowToPlay } from "../Events/Events/EventHowToPlay"
-import { Character } from "./Character"
+
+import mapdata from "../../assets/mapdata/mapdata.json"
 
 export class Scene {
     readonly ready: Promise<void>
@@ -42,8 +44,8 @@ export class Scene {
         this.map = new MapData(mapdata, new Player(this), this)
         // this.map = new MapData(mapdata, new MapWriter(this), this)
 
-        this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
-        // this.#mode = new ModePlay(this)
+        // this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
+        this.#mode = new ModePlay(this)
 
         this.ready = this.map.ready
     }

@@ -9,7 +9,7 @@ export class EventKey extends GameEvent {
         this.#keyColor = keyColor
     }
 
-    *G(scene: Scene) {
+    *G(scene: Scene): Generator<void, void | GameEvent, void> {
         const door = scene.map.realSprites.find((s) => s.id === "door")!
         const player = scene.map.player
 

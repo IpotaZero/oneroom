@@ -4,7 +4,7 @@ import { EventKey } from "./EventKey"
 import { GameEvent } from "../GameEvent"
 
 export class EventTrash extends GameEvent {
-    *G(scene: Scene) {
+    *G(scene: Scene): Generator<void, void | GameEvent, void> {
         if (scene.flags.includes("item-get-カギ")) {
             yield* this.say(["動くゴミ箱。"])
             return
