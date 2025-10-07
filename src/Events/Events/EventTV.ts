@@ -1,15 +1,14 @@
 import { Scene } from "../../Game/Scene"
 import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
-import { EventDoor } from "./EventDoor"
 
-export class EventTV extends GameEvent {
+export default class EventTV extends GameEvent {
     *G(scene: Scene): Generator<void, void | GameEvent, void> {
         const player = scene.map.player
 
         if (player.direction !== 2) return
 
-        if (scene.flags.includes("TV")) {
+        if (scene.flags.isSuperSetOf("TV")) {
             yield* this.say(["砂嵐が流れている。"])
             return
         }
@@ -53,7 +52,8 @@ export class EventTV extends GameEvent {
         tv.direction = 2
 
         scene.map.player.direction = 0
+        scene.characters.forEach((c) => (c.status.san -= 3))
 
-        scene.flags.push("TV")
+        scene.flags.add("TV")
     }
 }

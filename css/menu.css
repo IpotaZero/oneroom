@@ -30,7 +30,8 @@
 
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+
+        gap: 1em;
 
         #first {
             display: flex;
@@ -40,10 +41,24 @@
             padding-bottom: 0.2em;
         }
 
+        #yesno {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            background-color: #111c;
+
+            border: whitesmoke 0.1em solid;
+            padding-bottom: 0.2em;
+        }
+
         #under {
             display: flex;
             flex-direction: column;
             gap: 0.5em;
+
+            margin-top: auto;
 
             #time {
                 text-align: right;

@@ -8,7 +8,7 @@
     background-color: #111c;
     position: absolute;
 
-    transition: opacity 0.4s, transform 0.4s;
+    transition: opacity 0.2s, transform 0.2s;
 
     padding: 0.5em;
 
@@ -24,5 +24,11 @@
         height: 100%;
         aspect-ratio: 1;
         object-fit: contain;
+
+        img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+        }
     }
 }

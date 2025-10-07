@@ -2,7 +2,7 @@ import { Scene } from "../../Game/Scene"
 import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
 
-export class EventFirst extends GameEvent {
+export default class EventFirst extends GameEvent {
     *G(scene: Scene): Generator<void, void | GameEvent, void> {
         yield* Array(30)
 

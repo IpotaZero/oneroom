@@ -2,7 +2,7 @@ import { Scene } from "../../Game/Scene"
 import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
 
-export class EventHowToPlay extends GameEvent {
+export default class EventHowToPlay extends GameEvent {
     *G(scene: Scene): Generator<void, void | GameEvent, void> {
         scene.cvs.style.display = "none"
 

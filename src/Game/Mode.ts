@@ -84,7 +84,13 @@ export class ModeMenu extends Mode {
                 <div class="buttons" id="first">
                     <button data-link="resume">再開</button>
                     <button data-link="items">持物</button>
-                    <button data-link="end">終了</button>
+                    <button data-link="yesno">終了</button>
+                </div>
+
+                <div id="yesno" class="buttons hidden">
+                    ほんとに?
+                    <button data-link="end-yes">はい</button>
+                    <button data-link="end-no">いいえ</button>
                 </div>
 
                 <div id="under">
@@ -92,13 +98,16 @@ export class ModeMenu extends Mode {
                     <div id="money">0円</div>
                 </div>
             </div>
+
             <div id="right">
                 <div id="characters">
                     ${scene.characters.map((c) => this.#createCharacterStatus(c)).join("")}
                 </div>
                 <div class="buttons hidden" id="items">
                     <span class="title">持物</span>
-                    ${scene.items.map((item) => `<button data-link="item-${item.id}">${item.id}</button>`).join("")}
+                    ${scene.items.items
+                        .map((item) => `<button data-link="item-${item.id}">${item.id}</button>`)
+                        .join("")}
                 </div>
             </div>
         `)
@@ -115,7 +124,24 @@ export class ModeMenu extends Mode {
         })
 
         this.#command.on("item-.*", (command) => {
-            this.scene.goto(new ModeEvent(this.scene, [scene.items[command.index].event()]))
+            this.scene.goto(new ModeEvent(this.scene, [scene.items.items[command.index].event()]))
+        })
+
+        this.#command.on("yesno", () => {
+            this.#command.container.querySelector("#yesno")!.classList.remove("hidden")
+        })
+
+        this.#command.on("end-yes", () => {
+            window.close()
+        })
+
+        this.#command.on("end-no", () => {
+            this.#command.back(1)
+        })
+
+        this.#command.onLeft("yesno", () => {
+            this.#command.container.querySelector("#first")!.classList.remove("hidden")
+            this.#command.container.querySelector("#yesno")!.classList.add("hidden")
         })
 
         this.#command.onLeft("items", () => {

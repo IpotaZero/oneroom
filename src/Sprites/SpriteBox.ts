@@ -1,8 +1,8 @@
 import { Scene } from "../Game/Scene"
 import { vec } from "../utils/Vec"
-import { Sprite, SpriteOption } from "./Sprite"
+import Sprite, { SpriteOption } from "./Sprite"
 
-export class SpriteBox extends Sprite {
+export default class SpriteBox extends Sprite {
     constructor(scene: Scene, options: SpriteOption) {
         super(scene, options)
 

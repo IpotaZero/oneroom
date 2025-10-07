@@ -1,25 +1,27 @@
 import { Item } from "../../Game/Item"
 import { Scene } from "../../Game/Scene"
-import { EventKey } from "./EventKey"
+import { Awaits } from "../../utils/Awaits"
 import { GameEvent } from "../GameEvent"
 
-export class EventDoor extends GameEvent {
+export default class EventDoor extends GameEvent {
     *G(scene: Scene): Generator<void, void | GameEvent, void> {
         const chY = { type: "character", url: "ユウナ.png" } as const
 
         const keys = ["赤いカギ", "青いカギ", "緑のカギ", "黄色いカギ", "紫のカギ"]
 
-        const isUsed = keys.some((k) => scene.flags.includes(`item-use-${k}`))
+        const isUsed = keys.some((k) => scene.flags.isSuperSetOf(`item-use-${k}`))
 
         if (isUsed) {
             const num = yield* this.ask(["抜く", "やめる"], { title: "カギを抜く?" })
 
             if (num === 0) {
-                keys.forEach((k) => {
-                    scene.flags = scene.flags.filter((f) => f !== `item-use-${k}`)
+                const { default: EventKey } = yield* Awaits.yield(import("./EventKey"))
 
-                    if (!scene.items.find((i) => i.id === k)) {
-                        scene.items.push(new Item(k, () => new EventKey(scene, k)))
+                keys.forEach((k) => {
+                    scene.flags.remove(`item-use-${k}`)
+
+                    if (!scene.items.findById(k)) {
+                        scene.items.add(new Item(k, () => new EventKey(scene, k)))
                     }
                 })
 

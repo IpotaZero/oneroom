@@ -1,11 +1,11 @@
 import { Item } from "../../Game/Item"
 import { Scene } from "../../Game/Scene"
-import { EventKey } from "./EventKey"
+import { Awaits } from "../../utils/Awaits"
 import { GameEvent } from "../GameEvent"
 
-export class EventTrash extends GameEvent {
+export default class EventTrash extends GameEvent {
     *G(scene: Scene): Generator<void, void | GameEvent, void> {
-        if (scene.flags.includes("item-get-カギ")) {
+        if (scene.flags.isSuperSetOf("item-get-カギ")) {
             yield* this.say(["動くゴミ箱。"])
             return
         }
@@ -20,10 +20,14 @@ export class EventTrash extends GameEvent {
             "カギを見つけた。",
         ])
 
-        scene.flags.push("item-get-カギ")
+        scene.characters.forEach((c) => (c.status.san -= 1))
+
+        scene.flags.add("item-get-カギ")
 
         const keys = ["赤いカギ", "青いカギ", "緑のカギ", "黄色いカギ", "紫のカギ"]
 
-        keys.forEach((k) => scene.items.push(new Item(k, () => new EventKey(scene, k))))
+        const { default: EventKey } = yield* Awaits.yield(import("./EventKey"))
+
+        keys.forEach((k) => scene.items.add(new Item(k, () => new EventKey(scene, k))))
     }
 }

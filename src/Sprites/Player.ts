@@ -1,10 +1,10 @@
 import { keyboard } from "../utils/Input"
 import { vec } from "../utils/Vec"
-import { Sprite } from "./Sprite"
 import { MapData } from "../Game/MapData"
 import { Scene } from "../Game/Scene"
+import Sprite from "./Sprite"
 
-export class Player extends Sprite {
+export default class Player extends Sprite {
     constructor(scene: Scene) {
         super(scene, {
             id: "player",
@@ -32,7 +32,6 @@ export class Player extends Sprite {
                 ],
             ],
             size: [1, 1],
-            creature: false,
         })
     }
 
@@ -53,6 +52,6 @@ export class Player extends Sprite {
 
         if (v.magnitude() === 0) return
 
-        this.moveBy(v, map, { frame: 3 })
+        this.moveBy(v, map, { frame: 5 })
     }
 }

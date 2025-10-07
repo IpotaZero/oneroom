@@ -1,10 +1,10 @@
 import { keyboard } from "../utils/Input"
 import { vec } from "../utils/Vec"
-import { Sprite } from "./Sprite"
 import { Scene } from "../Game/Scene"
 import { TILE_SIZE } from "../Game/Constant"
+import Sprite from "./Sprite"
 
-export class MapWriter extends Sprite {
+export default class MapWriter extends Sprite {
     currentTileId = 0
 
     constructor(scene: Scene) {

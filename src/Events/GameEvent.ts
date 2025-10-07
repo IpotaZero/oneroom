@@ -4,16 +4,18 @@ import { keyboard } from "../utils/Input"
 import { Itext } from "../utils/Itext"
 
 export class GameEvent {
+    static #iconCache: Map<string, HTMLImageElement> = new Map()
+
     #g: Generator<void, GameEvent | void, void>
 
     #box: HTMLDivElement
     #text: HTMLDivElement
-    #icon: HTMLImageElement
+    #icon: HTMLDivElement
 
     constructor(scene: Scene) {
         this.#box = document.createElement("div")
         this.#text = document.createElement("div")
-        this.#icon = document.createElement("img")
+        this.#icon = document.createElement("div")
 
         this.#g = this.G(scene)
 
@@ -66,27 +68,25 @@ export class GameEvent {
 
             if (typeof command === "string") {
                 yield* this.#handleTextCommand(command)
-                continue
-            }
-
-            if (command.type === "character") {
-                this.#handleCharacterCommand(command.url)
-                continue
-            } else if (command.type === "ask") {
+            } else if (command.type === "character") {
+                yield* this.#handleCharacterCommand(command.url)
             }
         }
 
         this.#box.classList.add("hidden")
     }
 
-    protected *ask(options: readonly string[], option: { title?: string } = {}): Generator<any, number | null, any> {
+    protected *ask(
+        options: readonly string[],
+        { title, cancelable = true }: { title?: string; cancelable?: boolean } = {},
+    ): Generator<any, number | null, any> {
         this.#box.classList.remove("hidden")
 
         this.#text.innerHTML = ""
 
         const command = new Command(`
             <div class="buttons" id="first">
-                ${option.title ? `<div class="title">${option.title}</div>` : ""}
+                ${title ? `<div class="title">${title}</div>` : ""}
                 ${options.map((option, i) => `<button data-link="${i}">${option}</button>`).join("")}
             </div>
             <style>
@@ -107,9 +107,11 @@ export class GameEvent {
             selected = command.index
         })
 
-        command.onBack(() => {
-            selected = null
-        })
+        if (cancelable) {
+            command.onBack(() => {
+                selected = null
+            })
+        }
 
         while (selected === -1) {
             command.update()
@@ -125,12 +127,22 @@ export class GameEvent {
         while (!keyboard.longPressed.has("KeyZ") && !keyboard.longPressed.has("KeyX")) yield
     }
 
-    #handleCharacterCommand(url: string) {
+    *#handleCharacterCommand(url: string) {
         if (url === "none") {
             this.#icon.style.display = "none"
         } else {
+            if (!GameEvent.#iconCache.has(url)) {
+                const img = new Image()
+                img.src = `assets/images/icon/${url}`
+
+                while (!img.complete) yield
+
+                GameEvent.#iconCache.set(url, img)
+            }
+
+            this.#icon.innerHTML = ""
+            this.#icon.appendChild(GameEvent.#iconCache.get(url)!.cloneNode(true))
             this.#icon.style.display = ""
-            this.#icon.src = `assets/images/icon/${url}`
         }
     }
 

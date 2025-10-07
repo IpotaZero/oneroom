@@ -47,6 +47,12 @@ export class Command {
         this.#onBackHandler = handler
     }
 
+    back(depth: number = 1) {
+        for (let i = 0; i < depth; i++) {
+            this.#back()
+        }
+    }
+
     // --- Private Methods ---
 
     #initButtonFamily() {
@@ -85,7 +91,7 @@ export class Command {
 
         const buttons = this.#buttonFamily[prevId]!
         const index = Math.max(
-            buttons.findIndex((b) => b.classList.contains("selected")),
+            buttons.findIndex((b) => b.dataset["link"] === this.currentBranch),
             0,
         )
 
@@ -121,9 +127,11 @@ export class Command {
         const currentButtons = this.#getCurrentButtons()
         if (!currentButtons) return
 
-        currentButtons.forEach((b, i) => {
-            b.classList.toggle("selected", i === this.index)
+        this.container.querySelectorAll("button").forEach((b, i) => {
+            b.classList.remove("selected")
         })
+
+        currentButtons[this.index]?.classList.add("selected")
     }
 }
 

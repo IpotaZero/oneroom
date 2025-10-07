@@ -5,15 +5,11 @@ import { Camera } from "./Camera"
 import { MapData } from "./MapData"
 import { Character } from "./Character"
 import { Mode, ModeEvent, ModePlay } from "./Mode"
-import { Item } from "./Item"
-
-import { Player } from "../Sprites/Player"
-import { MapWriter } from "../Sprites/MapWriter"
-
-import { EventFirst } from "../Events/Events/EventFirst"
-import { EventHowToPlay } from "../Events/Events/EventHowToPlay"
+import { Item, Items } from "./Item"
 
 import mapdata from "../../assets/mapdata/mapdata.json"
+import { Flags } from "./Flags"
+import Player from "../Sprites/Player"
 
 export class Scene {
     readonly ready: Promise<void>
@@ -24,8 +20,8 @@ export class Scene {
 
     readonly container = document.querySelector("#container") as HTMLDivElement
 
-    flags: string[] = []
-    items: Item[] = []
+    readonly flags: Flags = new Flags()
+    readonly items: Items = new Items()
 
     characters: Character[] = [new Character("ユウナ", "ユウナ.png")]
 
@@ -41,7 +37,7 @@ export class Scene {
 
         this.camera = new Camera()
 
-        this.map = new MapData(mapdata, new Player(this), this)
+        this.map = new MapData(mapdata as any, new Player(this), this)
         // this.map = new MapData(mapdata, new MapWriter(this), this)
 
         // this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
@@ -65,8 +61,9 @@ export class Scene {
         const cvs = document.createElement("canvas")
         cvs.width = WIDTH
         cvs.height = HEIGHT
+        cvs.id = "sprites"
 
-        const ctx = cvs.getContext("2d")!
+        const ctx = cvs.getContext("2d", { alpha: false })!
         ctx.imageSmoothingEnabled = false
 
         this.container.appendChild(cvs)
@@ -85,7 +82,7 @@ export class Scene {
         this.#ctx.scale(this.camera.scale, this.camera.scale)
         this.#ctx.translate(WIDTH / 2 - this.camera.p.x, HEIGHT / 2 - this.camera.p.y)
         this.#ctx.drawImage(this.map.canvas, 0, 0)
-        this.map.realSprites.forEach((s) => s.draw(this.#ctx))
+        this.map.realSprites.filter((s) => s.visible).forEach((s) => s.draw(this.#ctx))
         this.#ctx.restore()
     }
 }

@@ -18,7 +18,11 @@ const mainLoop = () => {
         return
     }
 
-    scene.update()
+    try {
+        scene.update()
+    } catch (error) {
+        alert((error as Error).message)
+    }
 
     requestAnimationFrame(mainLoop)
 }

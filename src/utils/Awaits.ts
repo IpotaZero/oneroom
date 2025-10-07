@@ -70,4 +70,20 @@ export class Awaits {
             )
         })
     }
+
+    static yield<T>(p: Promise<T>): Generator<void, T> {
+        return (function* () {
+            let loaded = false
+            let result: T
+
+            p.then((r) => {
+                result = r
+                loaded = true
+            })
+
+            while (!loaded) yield
+
+            return result!
+        })()
+    }
 }

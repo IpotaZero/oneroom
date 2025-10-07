@@ -9,3 +9,19 @@ export class Item {
         this.event = event
     }
 }
+
+export class Items {
+    items: Item[] = []
+
+    add(item: Item) {
+        this.items.push(item)
+    }
+
+    removeById(id: string) {
+        this.items = this.items.filter((i) => i.id !== id)
+    }
+
+    findById(id: string) {
+        return this.items.find((i) => i.id === id)
+    }
+}

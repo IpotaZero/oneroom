@@ -1,13 +1,16 @@
-import { Events } from "../Events/Events"
 import { Scene } from "../Game/Scene"
-import { Sprite, SpriteOption } from "./Sprite"
+import Sprite, { SpriteOption } from "./Sprite"
 
-export class SpriteEvent extends Sprite {
+export default class SpriteEvent extends Sprite {
     constructor(scene: Scene, option: SpriteOption & { event: string }) {
         super(scene, option)
 
         this.action = () => {
-            return new Events[option.event](scene)
+            const EventClass = scene.map.eventMap.get(option.event)
+
+            if (!EventClass) throw new Error(`イベントが見つからなかったにゃ...... イベントID: ${option.event}`)
+
+            return new EventClass(scene)
         }
     }
 }
