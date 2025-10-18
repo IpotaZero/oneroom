@@ -15,6 +15,7 @@ export type SpriteOption = {
     creature?: boolean
     collision?: boolean
     visible?: boolean
+    zIndex?: number
 }
 
 export default class Sprite {
@@ -68,18 +69,19 @@ export default class Sprite {
 
     static #walkGenerator(frame: number) {
         return function* (this: Sprite) {
-            this.state = "walking"
+            this.state = "animating"
             const startQ = this.q
             const delta = this.p.scale(TILE_SIZE).sub(startQ)
 
             for (let i = 0; i < frame; i++) {
                 this.q = startQ.add(delta.scale((i + 1) / frame))
-                this.#walkFrame++
                 if (i === frame - 1) {
                     this.state = "standing"
                     this.#coolTime = 2
                 }
                 yield
+
+                this.#animationFrame++
             }
         }
     }
@@ -93,16 +95,23 @@ export default class Sprite {
     direction = 0
     visible = true
     collision: boolean = true
+    zIndex = 0
 
     protected gs: Generator[] = []
-    protected state: "walking" | "standing" = "standing"
+    protected state: "animating" | "standing" = "standing"
+    protected readonly animationFrameMap: ReadonlyArray<number> = [
+        ...Array(8).fill(0),
+        ...Array(8).fill(1),
+        ...Array(8).fill(2),
+        ...Array(8).fill(3),
+    ]
 
     #coolTime = 0
-    #walkFrame = 0
+    #animationFrame = 0
 
     constructor(
         scene: Scene,
-        { id, p, image, size, creature = false, collision = true, visible = true }: SpriteOption,
+        { id, p, image, size, creature = false, collision = true, visible = true, zIndex = 0 }: SpriteOption,
     ) {
         this.id = id
         this.size = vec(...size)
@@ -112,6 +121,7 @@ export default class Sprite {
         this.q = this.p.scale(TILE_SIZE)
         this.collision = collision
         this.visible = visible
+        this.zIndex = zIndex
 
         if (creature) {
             this.gs.push(Sprite.#creatureBehavior(scene).bind(this)())
@@ -121,8 +131,9 @@ export default class Sprite {
     draw(ctx: CanvasRenderingContext2D) {
         ctx.save()
 
-        const frameMap = [...Array(6).fill(1), ...Array(3).fill(0), ...Array(6).fill(2), ...Array(3).fill(0)]
-        const w = this.#walkFrame % frameMap.length
+        const frameMap = this.animationFrameMap
+
+        const w = this.#animationFrame % frameMap.length
 
         if (this.image.length > 0) {
             const img =
@@ -143,9 +154,10 @@ export default class Sprite {
     update(scene: Scene) {
         this.gs = this.gs.filter((g) => !g.next().done)
         if (this.#coolTime > 0) this.#coolTime--
+        this.#animationFrame++
     }
 
-    action(scene: Scene): GameEvent | void {}
+    action(scene: Scene): GameEvent[] | void {}
 
     moveTo(v: Vec) {
         this.p = v

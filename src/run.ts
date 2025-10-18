@@ -1,4 +1,4 @@
-import { Input } from "./utils/Input"
+import { Input, keyboard } from "./utils/Input"
 
 import { Scene } from "./Game/Scene"
 import { Itext } from "./utils/Itext"
@@ -7,22 +7,33 @@ Itext
 
 Input.init()
 
-let frame = 0
-
 const scene = new Scene()
 await scene.ready
 
+let last = performance.now()
+
 const mainLoop = () => {
-    if (frame++ % 2 !== 0) {
-        requestAnimationFrame(mainLoop)
-        return
+    if (keyboard.pushed.includes("F5")) {
+        location.reload()
+    } else if (keyboard.pushed.includes("F11")) {
+        if (document.fullscreenElement) {
+            document.exitFullscreen()
+        } else {
+            document.body.requestFullscreen()
+        }
     }
 
-    try {
+    if (performance.now() - last >= 32) {
+        last = performance.now()
         scene.update()
-    } catch (error) {
-        alert((error as Error).message)
+        Input.update()
     }
+
+    // try {
+    // } catch (error) {
+    //     console.error(error)
+    //     alert((error as Error).message)
+    // }
 
     requestAnimationFrame(mainLoop)
 }

@@ -1,5 +1,28 @@
 {
-  "dependencies": {
-    "vite": "^7.1.8"
-  }
+    "scripts": {
+        "build:win": "electron-packager . oneroom --icon=assets/images/icon.ico --asar"
+    },
+    "dependencies": {
+        "@electron/packager": "^19.0.0",
+        "electron-packager": "^17.1.2",
+        "vite": "^7.1.8"
+    },
+    "devDependencies": {
+        "electron": "^38.3.0",
+        "electron-builder": "^26.0.12"
+    },
+    "main": "index.js",
+    "version": "1.0.0",
+    "name": "oneroom",
+    "author": "ipota",
+    "build": {
+        "appId": "io.github.ipotazero.oneroom",
+        "directories": {
+            "output": "build"
+        },
+        "win": {
+            "target": "nsis",
+            "icon": "./icon.ico"
+        }
+    }
 }

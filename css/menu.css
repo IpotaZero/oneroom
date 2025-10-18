@@ -114,7 +114,7 @@
             align-items: flex-start;
             border: whitesmoke 0.1em solid;
             background-color: #111c;
-            padding: 1em;
+            padding: 1em 1.5em;
         }
     }
 }

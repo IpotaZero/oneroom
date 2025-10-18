@@ -2,10 +2,13 @@ export class Input {
     static isAvailable = true
 
     static keyboard = {
-        pressed: new Set<Input.KeyCode>(),
-        longPressed: new Set<Input.KeyCode>(),
-        pushed: new Set<Input.KeyCode>(),
-        upped: new Set<Input.KeyCode>(),
+        pressed: new Array<Input.KeyCode>(),
+        longPressed: new Array<Input.KeyCode>(),
+        pushed: new Array<Input.KeyCode>(),
+        upped: new Array<Input.KeyCode>(),
+        getLatestKey(filter: (key: Input.KeyCode) => boolean = () => true) {
+            return this.pressed.filter(filter).at(-1)
+        },
     }
 
     static mouse = {
@@ -35,27 +38,16 @@ export class Input {
             // 右クリックメニューを無効化
             e.preventDefault()
             e.stopPropagation()
-            return false
         })
 
-        document.addEventListener("keydown", (e) => {
-            if (e.code === "Tab") {
-                // Tabキーのデフォルト動作を無効化
-                e.preventDefault()
-                e.stopPropagation()
-                return false
-            }
-        })
-
-        // Touch events (for mobile)
         document.addEventListener("pointerdown", this.#handleTouchStart.bind(this), { passive: false })
         document.addEventListener("pointermove", this.#handleTouchMove.bind(this), { passive: false })
         document.addEventListener("pointerleave", this.#handleTouchEnd.bind(this), { passive: false })
         document.addEventListener("pointercancel", this.#handleTouchEnd.bind(this), { passive: false })
 
         // Keyboard events
-        document.addEventListener("keydown", this.#handleKeyDown.bind(this))
-        document.addEventListener("keyup", this.#handleKeyUp.bind(this))
+        window.addEventListener("keydown", this.#handleKeyDown.bind(this))
+        window.addEventListener("keyup", this.#handleKeyUp.bind(this))
 
         // Window focus events
         window.addEventListener("blur", this.#handleBlur.bind(this))
@@ -69,9 +61,9 @@ export class Input {
     static update() {
         if (!this.#initialized) console.error("Input is not initialized!")
 
-        this.keyboard.longPressed.clear()
-        this.keyboard.pushed.clear()
-        this.keyboard.upped.clear()
+        this.keyboard.longPressed = []
+        this.keyboard.pushed = []
+        this.keyboard.upped = []
 
         this.mouse.clicked.clear()
         this.mouse.upped.clear()
@@ -81,23 +73,28 @@ export class Input {
 
         if (!this.isAvailable) {
             this.mouse.down.clear()
-            this.keyboard.pressed.clear()
+            this.keyboard.pressed = []
         }
     }
 
     static #handleKeyDown(e: KeyboardEvent) {
-        if (!this.isAvailable) return
+        if (e.code === "Tab") {
+            // Tabキーのデフォルト動作を無効化
+            e.preventDefault()
+        }
 
         if (e.code.includes("Arrow")) {
             e.preventDefault()
         }
 
-        if (!this.keyboard.pressed.has(e.code as Input.KeyCode)) {
-            this.keyboard.pushed.add(e.code as Input.KeyCode)
+        if (!this.isAvailable) return
+
+        if (!this.keyboard.pressed.includes(e.code as Input.KeyCode)) {
+            this.keyboard.pushed.push(e.code as Input.KeyCode)
+            this.keyboard.pressed.push(e.code as Input.KeyCode)
         }
 
-        this.keyboard.pressed.add(e.code as Input.KeyCode)
-        this.keyboard.longPressed.add(e.code as Input.KeyCode)
+        this.keyboard.longPressed.push(e.code as Input.KeyCode)
     }
 
     static #handleKeyUp(e: KeyboardEvent) {
@@ -107,8 +104,8 @@ export class Input {
             e.preventDefault()
         }
 
-        this.keyboard.pressed.delete(e.code as Input.KeyCode)
-        this.keyboard.upped.add(e.code as Input.KeyCode)
+        this.keyboard.pressed = this.keyboard.pressed.filter((k) => k !== e.code)
+        this.keyboard.upped.push(e.code as Input.KeyCode)
     }
 
     static #handleTouchStart(e: PointerEvent) {
@@ -116,8 +113,8 @@ export class Input {
 
         // this.mouse.position.x = e.target.clientX
         // this.mouse.position.y = touch.clientY
-        this.mouse.down.add("left")
-        this.mouse.clicked.add("left")
+        // this.mouse.down.add("left")
+        // this.mouse.clicked.add("left")
         this.#handleMousePosition()
     }
 

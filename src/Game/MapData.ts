@@ -74,7 +74,13 @@ export class MapData {
 
         await Promise.all(this.sprites.map(processSprite))
 
+        this.realSprites.sort((a, b) => a.zIndex - b.zIndex)
+
         this.canvas = await this.#createCanvas()
+    }
+
+    isWall({ x, y }: { x: number; y: number }) {
+        return this.getRealWall()[y][x] === 1
     }
 
     getRealWall() {

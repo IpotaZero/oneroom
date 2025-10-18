@@ -24,18 +24,20 @@ export class ModePlay extends Mode {
     update(): void {
         this.scene.map.realSprites.forEach((s) => s.update(this.scene))
 
-        if (keyboard.pushed.has("KeyZ")) {
+        if (keyboard.pushed.includes("KeyZ")) {
             const events = this.scene.map.realSprites
+                .filter((s) => s.collision)
                 .filter((s) => s.getExistsP().some((p) => p.equals(this.scene.map.player.getDirectedP())))
                 .map((s) => s.action(this.scene))
-                .filter((s) => s instanceof GameEvent)
+                .filter((s) => s instanceof Array)
+                .flat()
 
             if (events.length > 0) {
                 this.scene.goto(new ModeEvent(this.scene, events))
             }
         }
 
-        if (keyboard.pushed.has("KeyX")) {
+        if (keyboard.pushed.includes("KeyX")) {
             this.scene.goto(new ModeMenu(this.scene))
         }
     }
@@ -58,8 +60,8 @@ export class ModeEvent extends Mode {
         const result = this.#currentEvent.update()
 
         if (result.done) {
-            if (result.value instanceof GameEvent) {
-                this.#eventQueue.push(result.value)
+            if (result.value instanceof Array) {
+                this.#eventQueue.push(...result.value)
             }
 
             if (this.#eventQueue.length === 0) {
@@ -67,6 +69,9 @@ export class ModeEvent extends Mode {
             } else {
                 this.#currentEvent = this.#eventQueue.shift()!
             }
+        } else if (result.value instanceof GameEvent) {
+            this.#eventQueue.unshift(this.#currentEvent)
+            this.#currentEvent = result.value
         }
     }
 }

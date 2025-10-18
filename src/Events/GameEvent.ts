@@ -6,7 +6,7 @@ import { Itext } from "../utils/Itext"
 export class GameEvent {
     static #iconCache: Map<string, HTMLImageElement> = new Map()
 
-    #g: Generator<void, GameEvent | void, void>
+    #g: Generator<GameEvent | void, GameEvent[] | void, void>
 
     #box: HTMLDivElement
     #text: HTMLDivElement
@@ -48,7 +48,7 @@ export class GameEvent {
         this.#box.classList.add("hidden")
     }
 
-    protected *G(scene: Scene): Generator<void, GameEvent | void, void> {}
+    protected *G(scene: Scene): Generator<GameEvent | void, GameEvent[] | void, void> {}
 
     update() {
         const result = this.#g.next()
@@ -124,7 +124,7 @@ export class GameEvent {
     }
 
     protected *wait() {
-        while (!keyboard.longPressed.has("KeyZ") && !keyboard.longPressed.has("KeyX")) yield
+        while (!keyboard.longPressed.includes("KeyZ") && !keyboard.longPressed.includes("KeyX")) yield
     }
 
     *#handleCharacterCommand(url: string) {
@@ -164,7 +164,7 @@ export class GameEvent {
     }
 }
 
-type SayCommand = {
+export type SayCommand = {
     type: "character"
     url: string
 }

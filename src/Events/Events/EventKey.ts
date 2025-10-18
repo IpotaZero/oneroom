@@ -11,7 +11,7 @@ export default class EventKey extends GameEvent {
         this.#keyColor = keyColor
     }
 
-    *G(scene: Scene): Generator<void, void | GameEvent, void> {
+    *G(scene: Scene): Generator<void, void | GameEvent[], void> {
         if (scene.map.id !== "room") {
             yield* this.say(["ここでは使えない。"])
             return
@@ -41,10 +41,12 @@ export default class EventKey extends GameEvent {
 
             if (isCorrectOrder) {
                 yield* this.#clear(scene)
+                const { default: EventClear } = yield* Awaits.yield(import("./EventClear"))
+                return [new EventClear(scene)]
             } else {
                 yield* this.#wrong(scene)
                 const { default: EventGameOver } = yield* Awaits.yield(import("./EventGameOver"))
-                return new EventGameOver(scene)
+                return [new EventGameOver(scene)]
             }
         }
     }
@@ -55,7 +57,9 @@ export default class EventKey extends GameEvent {
         door.size = vec(1, 3)
         door.collision = false
 
-        yield* Array(30)
+        yield* Array(15)
+
+        yield* this.say([{ type: "character", url: "ユウナ.png" }, "お"])
 
         const player = scene.map.player
 
@@ -68,8 +72,6 @@ export default class EventKey extends GameEvent {
         door.size = vec(1, 2)
 
         yield* Array(45)
-
-        yield* this.say([{ type: "character", url: "ユウナ.png" }, "あ"])
     }
 
     *#wrong(scene: Scene) {

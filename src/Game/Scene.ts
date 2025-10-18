@@ -10,6 +10,8 @@ import { Item, Items } from "./Item"
 import mapdata from "../../assets/mapdata/mapdata.json"
 import { Flags } from "./Flags"
 import Player from "../Sprites/Player"
+import EventFirst from "../Events/Events/EventFirst"
+import EventHowToPlay from "../Events/Events/EventHowToPlay"
 
 export class Scene {
     readonly ready: Promise<void>
@@ -40,8 +42,10 @@ export class Scene {
         this.map = new MapData(mapdata as any, new Player(this), this)
         // this.map = new MapData(mapdata, new MapWriter(this), this)
 
-        // this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
-        this.#mode = new ModePlay(this)
+        this.#mode = new ModeEvent(this, [new EventHowToPlay(this), new EventFirst(this)])
+        // this.#mode = new ModePlay(this)
+
+        this.items.add(new Item("マニュアル", () => new EventHowToPlay(this)))
 
         this.ready = this.map.ready
     }
@@ -49,7 +53,6 @@ export class Scene {
     update() {
         this.#mode.update()
         this.#draw()
-        Input.update()
     }
 
     goto(mode: Mode) {

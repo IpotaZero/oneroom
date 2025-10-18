@@ -7,7 +7,7 @@ export default class SpriteSerif extends Sprite {
         super(scene, option)
 
         this.action = () => {
-            return new EventSerif(scene, [...option.serif])
+            return [new EventSerif(scene, [...option.serif])]
         }
     }
 }

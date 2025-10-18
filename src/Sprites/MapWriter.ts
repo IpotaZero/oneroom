@@ -36,7 +36,7 @@ export default class MapWriter extends Sprite {
     }
 
     #walk() {
-        if (this.state === "walking") return
+        if (this.state === "animating") return
 
         const v = vec(0, 0)
 

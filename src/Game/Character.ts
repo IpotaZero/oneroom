@@ -11,7 +11,7 @@ export class Character {
         lv: 9,
         hp: 24,
         mp: 0,
-        san: 20,
+        san: 10,
     }
 
     constructor(name: string, icon: string) {

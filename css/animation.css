@@ -44,3 +44,24 @@
         opacity: 1;
     }
 }
+
+@property --theta {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.yurayura {
+    animation: theta 0.3s linear infinite;
+    transform: translate(calc(sin(var(--theta) * 3) * 0.1dvh), calc(sin(var(--theta) * 2) * 0.1dvh));
+}
+
+@keyframes theta {
+    from {
+        --theta: 0deg;
+    }
+
+    to {
+        --theta: 360deg;
+    }
+}

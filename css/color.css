@@ -1,0 +1,14 @@
+.red {
+    color: #ff2323ff;
+    text-shadow: 0 0 0.5dvh rgb(127, 127, 127);
+}
+
+.green {
+    color: rgb(64, 255, 35);
+    text-shadow: 0 0 0.5dvh rgb(127, 127, 127);
+}
+
+.blue {
+    color: rgb(35, 156, 255);
+    text-shadow: 0 0 0.5dvh rgb(127, 127, 127);
+}

@@ -4,7 +4,7 @@ import { Awaits } from "../../utils/Awaits"
 import { GameEvent } from "../GameEvent"
 
 export default class EventDoor extends GameEvent {
-    *G(scene: Scene): Generator<void, void | GameEvent, void> {
+    *G(scene: Scene): Generator<void, void | GameEvent[], void> {
         const chY = { type: "character", url: "ユウナ.png" } as const
 
         const keys = ["赤いカギ", "青いカギ", "緑のカギ", "黄色いカギ", "紫のカギ"]
@@ -32,5 +32,13 @@ export default class EventDoor extends GameEvent {
         }
 
         yield* this.say(["カギがかかっている。", chY, "5個カギ穴がある!"])
+
+        if (!scene.flags.isSuperSetOf("TV")) {
+            const tv = scene.map.getSpriteById("tv")
+            tv.direction = 2
+            scene.map.player.direction = 3
+            yield* Array(15)
+            yield* this.say([chY, "?"])
+        }
     }
 }

@@ -5,10 +5,19 @@ import { Scene } from "../Game/Scene"
 import Sprite from "./Sprite"
 
 export default class Player extends Sprite {
+    protected override readonly animationFrameMap: ReadonlyArray<number> = [
+        ...Array(12).fill(1),
+        ...Array(6).fill(0),
+        ...Array(12).fill(2),
+        ...Array(6).fill(0),
+    ]
+
+    zIndex: number = 100
+
     constructor(scene: Scene) {
         super(scene, {
             id: "player",
-            p: [10, 10],
+            p: [9, 10],
             image: [
                 [
                     { url: "ユウナ.png", p: [0, 0], size: [16, 16] },
@@ -41,14 +50,16 @@ export default class Player extends Sprite {
     }
 
     #walk(map: MapData) {
-        if (this.state === "walking") return
+        if (this.state === "animating") return
 
         const v = vec(0, 0)
 
-        if (keyboard.pressed.has("ArrowRight")) v.x += 1
-        else if (keyboard.pressed.has("ArrowLeft")) v.x -= 1
-        else if (keyboard.pressed.has("ArrowDown")) v.y += 1
-        else if (keyboard.pressed.has("ArrowUp")) v.y -= 1
+        const latestKey = keyboard.getLatestKey((k) => k.startsWith("Arrow"))
+
+        if (latestKey === "ArrowRight") v.x += 1
+        else if (latestKey === "ArrowLeft") v.x -= 1
+        else if (latestKey === "ArrowDown") v.y += 1
+        else if (latestKey === "ArrowUp") v.y -= 1
 
         if (v.magnitude() === 0) return
 

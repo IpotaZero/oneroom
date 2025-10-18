@@ -28,9 +28,9 @@ export class Command {
     update() {
         this.#move()
 
-        if (keyboard.pushed.has("KeyX")) {
+        if (keyboard.pushed.includes("KeyX")) {
             this.#back()
-        } else if (keyboard.pushed.has("KeyZ")) {
+        } else if (keyboard.pushed.includes("KeyZ")) {
             this.#select()
         }
     }
@@ -69,10 +69,10 @@ export class Command {
         const currentButtons = this.#getCurrentButtons()
         if (!currentButtons) return
 
-        if (keyboard.longPressed.has("ArrowUp")) {
+        if (keyboard.longPressed.includes("ArrowUp")) {
             this.index = (this.index + currentButtons.length - 1) % currentButtons.length
             this.#updateClass()
-        } else if (keyboard.longPressed.has("ArrowDown")) {
+        } else if (keyboard.longPressed.includes("ArrowDown")) {
             this.index = (this.index + 1) % currentButtons.length
             this.#updateClass()
         }

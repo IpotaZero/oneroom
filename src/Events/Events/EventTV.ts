@@ -1,9 +1,10 @@
 import { Scene } from "../../Game/Scene"
 import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
+import EventSanCheck from "./EventSanCheck"
 
 export default class EventTV extends GameEvent {
-    *G(scene: Scene): Generator<void, void | GameEvent, void> {
+    *G(scene: Scene): Generator<void, void | GameEvent[], void> {
         const player = scene.map.player
 
         if (player.direction !== 2) return
@@ -35,7 +36,7 @@ export default class EventTV extends GameEvent {
             chY,
             "うわ、誰?",
             chN,
-            "僕の名前はナ゛ミ! 君を連れてきた張本人さ!",
+            "僕は君を連れてきた張本人さ!",
             chY,
             "なんで連れてきたんすか?",
             chN,
@@ -50,10 +51,9 @@ export default class EventTV extends GameEvent {
         ])
 
         tv.direction = 2
-
         scene.map.player.direction = 0
-        scene.characters.forEach((c) => (c.status.san -= 3))
-
         scene.flags.add("TV")
+
+        return [new EventSanCheck(scene, -5)]
     }
 }

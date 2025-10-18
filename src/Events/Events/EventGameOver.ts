@@ -2,7 +2,7 @@ import { Scene } from "../../Game/Scene"
 import { GameEvent } from "../GameEvent"
 
 export default class EventGameOver extends GameEvent {
-    *G(scene: Scene): Generator<void, void | GameEvent, void> {
+    *G(scene: Scene): Generator<void, void | GameEvent[], void> {
         const panel = document.createElement("div")
         panel.id = "game-over-panel"
         panel.innerHTML = `

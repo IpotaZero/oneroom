@@ -1,22 +1,22 @@
 import { Scene } from "../../Game/Scene"
-import { vec } from "../../utils/Vec"
 import { GameEvent } from "../GameEvent"
 
 export default class EventHowToPlay extends GameEvent {
-    *G(scene: Scene): Generator<void, void | GameEvent, void> {
+    *G(scene: Scene): Generator<void, void | GameEvent[], void> {
         scene.cvs.style.display = "none"
 
         const panel = document.createElement("div")
         panel.id = "how-to-play-panel"
         panel.className = "hidden"
         panel.innerHTML = `
-            <h2>How to Play</h2>
+            <h2>操作方法</h2>
             
-            <p>Use the arrow keys to move your character around the map.</p>
-            <p>Press the [Z] to interact with objects.</p>
-            <p>Press the [X] to open the menu and cancel actions.</p>
+            <p>矢印キーで移動</p>
+            <p>[ Z ]で調べる</p>
+            <p>[ X ]でメニュー/キャンセル</p>
+            <p>セーブは無いです</p>
 
-            <p class="continue text-end">[Z] to continue</p>
+            <p class="continue text-end">[ Z ]で続ける</p>
         `
 
         scene.container.appendChild(panel)

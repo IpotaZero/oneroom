@@ -10,7 +10,7 @@ export default class SpriteEvent extends Sprite {
 
             if (!EventClass) throw new Error(`イベントが見つからなかったにゃ...... イベントID: ${option.event}`)
 
-            return new EventClass(scene)
+            return [new EventClass(scene)]
         }
     }
 }
